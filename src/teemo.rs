@@ -4,9 +4,18 @@ use std::fs;
 use anyhow::Result;
 use log::{error, info, warn};
 use serde::{Serialize, Deserialize};
-use thirtyfour::{DesiredCapabilities, WebDriver};
+use thirtyfour::{Capabilities, WebDriver};
 
 use crate::action::Action;
+
+#[derive(Deserialize, Serialize)]
+
+pub struct WebDriverParams {
+    #[serde(rename = "url", default)]
+    pub server_url: String,
+    #[serde(rename = "capabilities", default)]
+    pub capabilities: String,
+}
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct Step {
@@ -20,6 +29,8 @@ pub struct Step {
 
 #[derive(Serialize, Deserialize)]
 pub struct Teemo {
+    #[serde(rename = "webDriver")]
+    pub web_driver: WebDriverParams,
     pub steps: Vec<Step>,
     pub content: String,
 }
@@ -37,8 +48,8 @@ impl Teemo {
     pub async fn run(self) -> Result<(), anyhow::Error> {
         let mut map: HashMap<String, String> = HashMap::new();
 
-        let caps = DesiredCapabilities::chrome();
-        let driver = WebDriver::new("http://localhost:9515", caps).await?;
+        let caps: Capabilities = serde_json::from_str(&self.web_driver.capabilities)?;
+        let driver = WebDriver::new(&self.web_driver.server_url, caps).await?;
 
         for item in self.steps {
             match item.action.run(&driver).await {
@@ -81,24 +92,31 @@ mod test {
     #[test]
     fn test_config_init() {
         let contents = r#"
+webDriver:
+  url: 'http://localhost:9515'
+  capabilities: |
+    {
+      "browserName": "chrome",
+      "goog:chromeOptions": {
+        "args": ["--headless", "--window-size=1920,1080"]
+      }
+    }
 steps:
 - action: Goto
   url: https://google.com
 - action: Click
   locator: {strategy: XPath, expr: '//*[@id="L2AGLb"]'}
-  alowSkip: true
+  allowSkip: true
 - action: Wait
-  timeout: 5
+  timeout: 3
 - action: SendKeys
   value: [ 'ultraji', 'Key::Enter']
   locator: { strategy: XPath, expr: '//*[@id="APjFqb"]' }
 - action: Wait
-  timeout: 5
+  timeout: 3
 - action: GetElemText
   locator: { strategy: XPath, expr: '//*[@id="rso"]/div[1]/div/div/div[1]/div/div/span/a/div/div/div/cite' }
   resourceName: first_item
-- action: Wait
-  timeout: 5
 content: "This is first search result item of ultraji. It's ${first_item}. "
 "#;
         fs::write("teemo.yaml", contents).expect("Failed to write config file");

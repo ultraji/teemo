@@ -19,8 +19,11 @@ steps:
 - action: SendKeys
   value: [ 'ultraji', 'Key::Enter']
   locator: { strategy: XPath, expr: '//*[@id="APjFqb"]' }
+- action: ExecScript
+  script: 'console.log("hello world")'
+  params: [""]
 - action: Wait
-  timeout: 3
+  timeout: 3000
 - action: GetElemText
   locator: { strategy: XPath, expr: '//*[@id="rso"]/div[1]/div/div/div[1]/div/div/span/a/div/div/div/cite' }
   resourceName: first_item

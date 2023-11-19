@@ -17,21 +17,21 @@ webDriver:
       }
     }
 steps:
-  - action: Goto
-    url: https://google.com
-  - action: Click
-    locator: {strategy: XPath, expr: '//*[@id="L2AGLb"]'}
-    allowSkip: true
-  - action: Wait
-    timeout: 3
-  - action: SendKeys
-    value: [ 'ultraji', 'Key::Enter']
-    locator: { strategy: XPath, expr: '//*[@id="APjFqb"]' }
-  - action: Wait
-    timeout: 3
-  - action: GetElemText
-    locator: { strategy: XPath, expr: '//*[@id="rso"]/div[1]/div/div/div[1]/div/div/span/a/div/div/div/cite' }
-    resourceName: first_item
+- action: Goto
+  url: https://google.com
+- action: Click
+  locator: {strategy: XPath, expr: '//*[@id="L2AGLb"]'}
+  allowSkip: true
+- action: Wait
+  timeout: 3
+- action: SendKeys
+  value: [ 'ultraji', 'Key::Enter']
+  locator: { strategy: XPath, expr: '//*[@id="APjFqb"]' }
+- action: Wait
+  timeout: 3
+- action: GetElemText
+  locator: { strategy: XPath, expr: '//*[@id="rso"]/div[1]/div/div/div[1]/div/div/span/a/div/div/div/cite' }
+resourceName: first_item
 content: "This is first search result item of ultraji. It's ${first_item}. "
 ```
 

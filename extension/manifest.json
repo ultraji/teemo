@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "teemo",
+  "description": "A simple extension to inject some javascript code.",
+  "version": "0.1.0",
+  "content_scripts": [{
+    "matches": ["*://*/*"],
+    "run_at": "document_start",
+    "js": ["inject.js"]
+  }],
+  "web_accessible_resources": [{
+    "resources": ["injected.js"],
+    "matches": ["*://*/*"]
+  }]
+}
